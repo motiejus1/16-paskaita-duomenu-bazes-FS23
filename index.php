@@ -30,10 +30,20 @@ class DatabaseConnection {
 
     //SELECT * FROM `kategorijos` WHERE 1
 
-    public function selectAction() {
+    public function selectAction($table, $collumns = "*", $where = "WHERE 1", $orderCollumn = "id", $orderBy = "ASC") {
+
+        if(is_array($collumns)) {
+            $collumns = implode(", ", $collumns);
+        }
+
+        if(is_null($where)) {
+            $where = "WHERE 1";
+        }
+
         try {
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $sql = "SELECT * FROM `kategorijos` WHERE 1";
+            $sql = "SELECT $collumns FROM `$table` $where ORDER BY $orderCollumn $orderBy";
+            var_dump($sql);
             //pasiruosimas vykdyti
             $stmt = $this->conn->prepare($sql);
             //vykdyti
@@ -59,4 +69,4 @@ class DatabaseConnection {
 }
 
 $conn = new DatabaseConnection();
-$conn->selectAction();
+$conn->selectAction("kategorijos",["id","title"], null, "id", "DESC");
