@@ -1,72 +1,44 @@
-<?php 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmai</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link" href="index.php">Pagrindinis</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="index.php?page=create">Kurti filmą</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="index.php?page=update">Redaguoti filmą</a>
+            </li>
 
-//1.Prie duomenu bazes reikia prisijungti x
-//2. Kodas turi atlikti SQL uzklausa  
-//3.Kodas turi atsijungti nuo duomenu bazes
+            
+        </ul>
+        <?php 
+            //pagal GET kintamaji mes busime nukreipiami į tam tikrus puslapius
+        
+            if(isset($_GET["page"])) {
+                if(($_GET["page"]) == "create") {
+                    include("movies/create.php");
+                } else if(($_GET["page"]) == "update") {
+                    include("movies/update.php");
+                } else if(($_GET["page"]) == "categories") {
+                    include("categories/index.php");
+                } 
+            } else {
+                include("movies/index.php");
+            }
 
-//proceduriniu budu 
-//objektiniu budu
-
-//proceduriniu budu labai lengva pamirst uzdaryti prisijungima prie duombazes
-class DatabaseConnection {
-    private $host = "localhost";
-    private $user = "root";
-    private $password = "";
-    private $database = "filmai";
-
-    protected $conn; //connection
-
-    //Konstruktoriaus funkcija - pasileidzia automatiskai objektui susikurus/ivykdzius objekto metoda
-    public function __construct() {
-        try {
-            $this->conn = new PDO("mysql:host=$this->host;dbname=$this->database", $this->user, $this->password);
-            echo "Prisijungta prie duomenu bazes sekmingai";
-        } catch(PDOException $e) {
-            echo "Prisijungti prie duomenu bazes nepavyko: " . $e->getMessage();
-        }
-
-    }
-
-
-    //SELECT * FROM `kategorijos` WHERE 1
-
-    public function selectAction($table, $collumns = "*", $where = "WHERE 1", $orderCollumn = "id", $orderBy = "ASC") {
-
-        if(is_array($collumns)) {
-            $collumns = implode(", ", $collumns);
-        }
-
-        if(is_null($where)) {
-            $where = "WHERE 1";
-        }
-
-        try {
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $sql = "SELECT $collumns FROM `$table` $where ORDER BY $orderCollumn $orderBy";
-            var_dump($sql);
-            //pasiruosimas vykdyti
-            $stmt = $this->conn->prepare($sql);
-            //vykdyti
-            $stmt->execute();
-
-            $result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
-            $result = $stmt->fetchAll();
-
-            var_dump($result);
-
-        } catch(PDOException $e) {
-            echo "Nepavyko vykdyti uzklausos: " . $e->getMessage();
-        }
-    }
-
-    //Destruktoriaus funkcija - pasileidzia automatiskai po objekto sunaikinimo/ ir po objekto metodo ivykdymo
-    public function __destruct() {
-        $this->conn = null;
-        echo "Atjungta is duomenu bazes sekmingai";
-    }
-
-
-}
-
-$conn = new DatabaseConnection();
-$conn->selectAction("kategorijos",["id","title"], null, "id", "DESC");
+        ?>
+    </div>
+</body>
+</html>
