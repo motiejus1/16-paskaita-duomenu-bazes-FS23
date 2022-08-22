@@ -136,6 +136,43 @@ class DatabaseConnection {
         }
     }
 
+    public function selectWithJoin($table1, $table2, $table1RelationCol, $table2RelationCol, $join, $cols) {
+        //table1 - filmai
+        //table2 - kategorijos
+
+        //sujungimo stulpeliai
+
+        //daznu atveju reikia pasirinkti konkrecius stulpelius
+        // tenka pervadinti stulpelius
+
+        //$table1 = "filmai";
+        //$table2 = "kategorijos";
+
+        //$table1RelationCol = "kategorijosID";
+        //$table2RelationCol = "id";
+
+        //$join = "LEFT JOIN";
+
+        //$cols = ["filmai.id", "filmai.title", "filmai.description", "filmai.image", "kategorijos.title as categoryTitle"];
+
+        $cols = implode(",", $cols); // "filmai.id, filmai.title, filmai.description, filmai.image, kategorijos.title as categoryTitle"
+
+        try {
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $sql = "SELECT $cols FROM $table1 
+            $join $table2
+            ON $table1.$table1RelationCol = $table2.$table2RelationCol";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->setFetchMode(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll();
+            return $result;
+        }
+        catch(PDOException $e) {
+            return "Nepavyko vykdyti uzklausos: " . $e->getMessage();
+        }
+    }
+
     //Destruktoriaus funkcija - pasileidzia automatiskai po objekto sunaikinimo/ ir po objekto metodo ivykdymo
     public function __destruct() {
         $this->conn = null;

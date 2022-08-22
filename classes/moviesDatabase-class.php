@@ -7,7 +7,10 @@ class MovieDatabase extends DatabaseConnection{
 
     public function __construct(){
         parent::__construct();
-        $this->movies = $this->selectAction("filmai");
+
+        // $this->movies = $this->selectAction("filmai");
+        $this->movies = $this->selectWithJoin("filmai", "kategorijos","kategorijosID", "id", "LEFT JOIN",["filmai.id", "filmai.title", "filmai.description", "filmai.image", "kategorijos.title as categoryTitle"]);
+        
         if(!isset($_GET["page"])) {
             foreach ($this->movies as $movie) {
                 echo "<tr>";
@@ -15,7 +18,11 @@ class MovieDatabase extends DatabaseConnection{
                 echo "<td>".$movie["title"]."</td>";
                 echo "<td>".$movie["description"]."</td>";
                 echo "<td>".$movie["image"]."</td>";
-                echo "<td>".$movie["kategorijosID"]."</td>";
+                if(empty($movie["categoryTitle"])) {
+                    echo "<td>Nėra kategorijos</td>";
+                } else {
+                    echo "<td>".$movie["categoryTitle"]."</td>";
+                }
                 echo "<td>";
                 echo "<form method='POST'>";
                 echo "<input type='hidden' name='id' value='".$movie["id"]."'>";
@@ -42,6 +49,8 @@ class MovieDatabase extends DatabaseConnection{
 
             }
         }
+
+        return $this->categories;
     }
 
     public function createMovie() {
@@ -57,7 +66,7 @@ class MovieDatabase extends DatabaseConnection{
             $movie["image"] = '"' . $movie["image"] . '"';
             $movie["kategorijosID"] = '"' . $movie["kategorijosID"] . '"';
             $this->insertAction("filmai", ["title", "description", "image", "kategorijosID"],[$movie["title"], $movie["description"], $movie["image"], $movie["kategorijosID"]]);
-            header("Location: index.php");
+          //  header("Location: index.php");
         }
     }
 

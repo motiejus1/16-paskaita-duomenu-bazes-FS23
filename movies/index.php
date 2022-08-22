@@ -19,6 +19,7 @@
             <th>Actions</th>
         </tr>
         <?php $movies = new MovieDatabase(); ?>
+        <?php $movies->selectWithJoin("filmai", "kategorijos","kategorijosID", "id", "LEFT JOIN",["filmai.id", "filmai.title", "filmai.description", "filmai.image", "kategorijos.title as categoryTitle"]); ?>
         <?php $movies->deleteMovie(); ?>
         
     </table>
